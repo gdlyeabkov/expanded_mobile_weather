@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:intl/intl.dart';
 
@@ -76,10 +77,24 @@ class HomePageState extends State<HomePage> {
   };
   String cityTemp = '0°';
   String cityDesc = 'Ясно';
+  int cityAqi = 0;
   String cityWater = '0%';
   String citySunRise = '';
   String citySunSet = '';
   String cityWindSpeed = '0';
+  double cityCoordLat = 0.0;
+  double cityCoordLon = 0.0;
+
+  Future<CityWeatherAQIResponse> getAQI() async {
+    final response = await http.get(Uri.parse('http://api.openweathermap.org/data/2.5/air_pollution?lat=${cityCoordLat}&lon=${cityCoordLon}&appid=8ced8d3f02f94ff154bc4ddb60fa72a9'));
+    if (response.statusCode == 200) {
+      return CityWeatherAQIResponse.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load city weather');
+    }
+  }
 
   getCitySunRise() {
     DateTime sunRise = DateTime.fromMillisecondsSinceEpoch(int.parse(citySunRise));
@@ -147,7 +162,7 @@ class HomePageState extends State<HomePage> {
       }
       var position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best)
-            .timeout(Duration(seconds: 5)
+            .timeout(Duration(seconds: 15)
       );
       try {
         List<Placemark> placemarks = await placemarkFromCoordinates(
@@ -170,6 +185,8 @@ class HomePageState extends State<HomePage> {
               int sunRise = value.sys.sunrise;
               int sunSet = value.sys.sunset;
               double windSpeed = value.wind.speed;
+              double lat = value.coord.lat;
+              double lon = value.coord.lon;
               setState(() {
                 cityTemp = '${temp}';
                 cityDesc = desc;
@@ -177,6 +194,8 @@ class HomePageState extends State<HomePage> {
                 citySunRise = '${sunRise}';
                 citySunSet = '${sunSet}';
                 cityWindSpeed = '${windSpeed}';
+                cityCoordLat = lat;
+                cityCoordLon = lon;
               });
               print('value1: ${value.main.temp}');
               print('value2: ${value.weather[0].main}');
@@ -184,6 +203,15 @@ class HomePageState extends State<HomePage> {
               print('value4: ${value.sys.sunrise}');
               print('value5: ${value.sys.sunset}');
               print('value6: ${value.wind.speed}');
+              print('value7: ${value.coord.lat}');
+              print('value8: ${value.coord.lon}');
+              // Future<CityWeatherAQIResponse> response = getAQI();
+              // response.then((value) {
+              //   WeatherAQIWrapInfo aqiContainer = WeatherAQIWrapInfo.fromJson(value.list[0] as Map<String, dynamic>);
+              //   WeatherAQIInfo aqiWrap = aqiContainer.main;
+              //   print('value9: ${aqiWrap.aqi}');
+              //   cityAqi = aqiWrap.aqi;
+              // });
             });
             setState(() {
               cityName = city;
@@ -242,7 +270,7 @@ class HomePageState extends State<HomePage> {
         actions: [
           FlatButton(
             onPressed: () {
-
+              Navigator.pushNamed(context, '/search');
             },
             child: Icon(
               Icons.add
@@ -334,6 +362,201 @@ class HomePageState extends State<HomePage> {
 
                     ]
                   ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            '00:00',
+                            style: TextStyle(
+                              color: Color.fromARGB(255 , 200, 200, 200)
+                            )
+                          ),
+                          Icon(
+                            Icons.wb_sunny,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                            size: 36
+                          ),
+                          Text(
+                            '0°',
+                            style: TextStyle(
+                              color: Color.fromARGB(255 , 0, 0, 0),
+                              fontWeight: FontWeight.w700
+                            )
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.water_drop,
+                                color: Color.fromARGB(255, 100, 100, 255),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(
+                                  left: 15
+                                ),
+                                child: Text(
+                                  '0%'
+                                )
+                              )
+                            ]
+                          )
+                        ]
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            '00:00',
+                            style: TextStyle(
+                              color: Color.fromARGB(255 , 200, 200, 200)
+                            )
+                          ),
+                          Icon(
+                            Icons.wb_sunny,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                            size: 36
+                          ),
+                          Text(
+                            '0°',
+                            style: TextStyle(
+                              color: Color.fromARGB(255 , 0, 0, 0),
+                              fontWeight: FontWeight.w700
+                            )
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.water_drop,
+                                color: Color.fromARGB(255, 100, 100, 255),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(
+                                  left: 15
+                                ),
+                                child: Text(
+                                  '0%'
+                                )
+                              )
+                            ]
+                          )
+                        ]
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            '00:00',
+                            style: TextStyle(
+                              color: Color.fromARGB(255 , 200, 200, 200)
+                            )
+                          ),
+                          Icon(
+                            Icons.wb_sunny,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                            size: 36
+                          ),
+                          Text(
+                            '0°',
+                            style: TextStyle(
+                              color: Color.fromARGB(255 , 0, 0, 0),
+                              fontWeight: FontWeight.w700
+                            )
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.water_drop,
+                                color: Color.fromARGB(255, 100, 100, 255),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(
+                                  left: 15
+                                ),
+                                child: Text(
+                                  '0%'
+                                )
+                              )
+                            ]
+                          )
+                        ]
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            '00:00',
+                            style: TextStyle(
+                              color: Color.fromARGB(255 , 200, 200, 200)
+                            )
+                          ),
+                          Icon(
+                            Icons.wb_sunny,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                            size: 36
+                          ),
+                          Text(
+                            '0°',
+                            style: TextStyle(
+                              color: Color.fromARGB(255 , 0, 0, 0),
+                              fontWeight: FontWeight.w700
+                            )
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.water_drop,
+                                color: Color.fromARGB(255, 100, 100, 255),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(
+                                  left: 15
+                                ),
+                                child: Text(
+                                  '0%'
+                                )
+                              )
+                            ]
+                          )
+                        ]
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            '00:00',
+                            style: TextStyle(
+                              color: Color.fromARGB(255 , 200, 200, 200)
+                            )
+                          ),
+                          Icon(
+                            Icons.wb_sunny,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                            size: 36
+                          ),
+                          Text(
+                            '0°',
+                            style: TextStyle(
+                              color: Color.fromARGB(255 , 0, 0, 0),
+                              fontWeight: FontWeight.w700
+                            )
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.water_drop,
+                                color: Color.fromARGB(255, 100, 100, 255),
+                              ),
+                              Container(
+                                  margin: EdgeInsets.only(
+                                    left: 15
+                                  ),
+                                  child: Text(
+                                    '0%'
+                                  )
+                              )
+                            ]
+                          )
+                        ]
+                      )
+                    ]
+                  ),
                   TextButton(
                     onPressed: () {
 
@@ -378,8 +601,310 @@ class HomePageState extends State<HomePage> {
               ),
               child: Column(
                 children: [
-                  Text(
-                    'Погода'
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Вчера'
+                      ),
+                      Text(
+                        '0°'
+                      )
+                    ]
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Сегодня',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700
+                        )
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.water_drop,
+                            color: Color.fromARGB(255, 100, 100, 255),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(
+                              left: 15
+                            ),
+                            child: Text(
+                              '0%'
+                            )
+                          )
+                        ]
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.wb_sunny,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                          ),
+                          Icon(
+                            Icons.nightlight_round,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                          )
+                        ]
+                      ),
+                      Text(
+                        '0°'
+                      )
+                    ]
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'вторник',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700
+                        )
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.water_drop,
+                            color: Color.fromARGB(255, 100, 100, 255),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(
+                              left: 15
+                            ),
+                            child: Text(
+                              '0%'
+                            )
+                          )
+                        ]
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.wb_sunny,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                          ),
+                          Icon(
+                            Icons.nightlight_round,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                          )
+                        ]
+                      ),
+                      Text(
+                        '0°'
+                      )
+                    ]
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'среда',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700
+                        )
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.water_drop,
+                            color: Color.fromARGB(255, 100, 100, 255),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(
+                              left: 15
+                            ),
+                            child: Text(
+                              '0%'
+                            )
+                          )
+                        ]
+                      ),
+                      Row(
+                          children: [
+                            Icon(
+                              Icons.wb_sunny,
+                              color: Color.fromARGB(255, 255, 100, 0),
+                            ),
+                            Icon(
+                              Icons.nightlight_round,
+                              color: Color.fromARGB(255, 255, 100, 0),
+                            )
+                          ]
+                      ),
+                      Text(
+                          '0°'
+                      )
+                    ]
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'четверг',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700
+                        )
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.water_drop,
+                            color: Color.fromARGB(255, 100, 100, 255),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(
+                              left: 15
+                            ),
+                            child: Text(
+                              '0%'
+                            )
+                          )
+                        ]
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.wb_sunny,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                          ),
+                          Icon(
+                            Icons.nightlight_round,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                          )
+                        ]
+                      ),
+                      Text(
+                        '0°'
+                      )
+                    ]
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'пятница',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700
+                        )
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.water_drop,
+                            color: Color.fromARGB(255, 100, 100, 255),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(
+                              left: 15
+                            ),
+                            child: Text(
+                              '0%'
+                            )
+                          )
+                        ]
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.wb_sunny,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                          ),
+                          Icon(
+                            Icons.nightlight_round,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                          )
+                        ]
+                      ),
+                      Text(
+                        '0°'
+                      )
+                    ]
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'суббота',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700
+                        )
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.water_drop,
+                            color: Color.fromARGB(255, 100, 100, 255),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(
+                              left: 15
+                            ),
+                            child: Text(
+                              '0%'
+                            )
+                          )
+                        ]
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.wb_sunny,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                          ),
+                          Icon(
+                            Icons.nightlight_round,
+                            color: Color.fromARGB(255, 255, 100, 0),
+                          )
+                        ]
+                      ),
+                      Text(
+                        '0°'
+                      )
+                    ]
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'воскресенье',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700
+                        )
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.water_drop,
+                            color: Color.fromARGB(255, 100, 100, 255),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(
+                              left: 15
+                            ),
+                            child: Text(
+                              '0%'
+                            )
+                          )
+                        ]
+                      ),
+                      Row(
+                          children: [
+                            Icon(
+                              Icons.wb_sunny,
+                              color: Color.fromARGB(255, 255, 100, 0),
+                            ),
+                            Icon(
+                              Icons.nightlight_round,
+                              color: Color.fromARGB(255, 255, 100, 0),
+                            )
+                          ]
+                      ),
+                      Text(
+                          '0°'
+                      )
+                    ]
                   ),
                   TextButton(
                     onPressed: () {
@@ -584,7 +1109,7 @@ class HomePageState extends State<HomePage> {
                         ]
                       ),
                       Text(
-                          cityWater
+                        '$cityAqi'
                       )
                     ]
                   ),
@@ -656,8 +1181,104 @@ class HomePageState extends State<HomePage> {
               ),
               child: Column(
                 children: [
-                  Text(
-                    'Погода'
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.directions_car_rounded,
+                        color: Color.fromARGB(255, 200, 100, 255)
+                      ),
+                      Container(
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Сложность дорожных условий'
+                                ),
+                                Text(
+                                  'Нет',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700
+                                  )
+                                )
+                              ]
+                            ),
+                            Divider()
+                          ]
+                        ),
+                        width: MediaQuery.of(context).size.width - 100,
+                        margin: EdgeInsets.only(
+                          left: 15
+                        )
+                      )
+                    ]
+                  ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.dirty_lens,
+                        color: Color.fromARGB(255, 255, 200, 0)
+                      ),
+                      Container(
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Пыльца'
+                                ),
+                                Text(
+                                  'Нет',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700
+                                  )
+                                )
+                              ]
+                            ),
+                            Divider()
+                          ]
+                        ),
+                        width: MediaQuery.of(context).size.width - 100,
+                        margin: EdgeInsets.only(
+                          left: 15
+                        )
+                      )
+                    ]
+                  ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.directions_walk,
+                        color: Color.fromARGB(255, 150, 200, 0)
+                      ),
+                      Container(
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Пробежка'
+                                ),
+                                Text(
+                                  'Хорошо',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700
+                                  )
+                                )
+                              ]
+                            ),
+                            Divider()
+                          ]
+                        ),
+                        width: MediaQuery.of(context).size.width - 100,
+                        margin: EdgeInsets.only(
+                          left: 15
+                        )
+                      )
+                    ]
                   ),
                   TextButton(
                     onPressed: () {
