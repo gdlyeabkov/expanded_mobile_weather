@@ -79,8 +79,8 @@ class HomePageState extends State<HomePage> {
   String cityDesc = 'Ясно';
   int cityAqi = 0;
   String cityWater = '0%';
-  String citySunRise = '';
-  String citySunSet = '';
+  String citySunRise = '0';
+  String citySunSet = '0';
   String cityWindSpeed = '0';
   double cityCoordLat = 0.0;
   double cityCoordLon = 0.0;
@@ -176,7 +176,6 @@ class HomePageState extends State<HomePage> {
           String? city = placemark.locality;
           bool isCityFound = city != null;
           if (isCityFound) {
-            print('cityName: ${city}');
             Future<CityWeatherResponse> response = fetchCityWeather(city);
             response.then((value) {
               double temp = value.main.temp;
@@ -197,30 +196,13 @@ class HomePageState extends State<HomePage> {
                 cityCoordLat = lat;
                 cityCoordLon = lon;
               });
-              print('value1: ${value.main.temp}');
-              print('value2: ${value.weather[0].main}');
-              print('value3: ${value.main.humidity}');
-              print('value4: ${value.sys.sunrise}');
-              print('value5: ${value.sys.sunset}');
-              print('value6: ${value.wind.speed}');
-              print('value7: ${value.coord.lat}');
-              print('value8: ${value.coord.lon}');
-              // Future<CityWeatherAQIResponse> response = getAQI();
-              // response.then((value) {
-              //   WeatherAQIWrapInfo aqiContainer = WeatherAQIWrapInfo.fromJson(value.list[0] as Map<String, dynamic>);
-              //   WeatherAQIInfo aqiWrap = aqiContainer.main;
-              //   print('value9: ${aqiWrap.aqi}');
-              //   cityAqi = aqiWrap.aqi;
-              // });
             });
             setState(() {
               cityName = city;
             });
           }
         }
-        print('placemarks: ${placemarks[0]}');
       } catch(err) {
-
       }
     }
   }
@@ -250,9 +232,7 @@ class HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Softtrack Погода',
-              style: TextStyle(
-              ),
+              'Погода',
               textAlign: TextAlign.center,
             )
           ]
@@ -1037,7 +1017,7 @@ class HomePageState extends State<HomePage> {
                         ]
                       ),
                       Text(
-                        '${getCitySunRise()}'
+                        '${0}'
                       )
                     ]
                   ),
