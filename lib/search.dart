@@ -39,9 +39,8 @@ class SearchPageState extends State<SearchPage> {
           )
         ),
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: () {
-
             },
             child: Icon(
               Icons.mic

@@ -8,7 +8,7 @@ import 'models.dart';
 
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as latLng;
@@ -145,66 +145,7 @@ class HomePageState extends State<HomePage> {
   }
 
   getMyCityName() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    } else {
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          return Future.error('Location permissions are denied');
-        }
-      }
-      if (permission == LocationPermission.deniedForever) {
-        return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-      }
-      var position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.best)
-            .timeout(Duration(seconds: 15)
-      );
-      try {
-        List<Placemark> placemarks = await placemarkFromCoordinates(
-          position.latitude,
-          position.longitude,
-        );
-        int placemarksCount = placemarks.length;
-        bool isPlacemarksFound = placemarksCount >= 1;
-        if (isPlacemarksFound) {
-          Placemark placemark = placemarks[0];
-          String? city = placemark.locality;
-          bool isCityFound = city != null;
-          if (isCityFound) {
-            Future<CityWeatherResponse> response = fetchCityWeather(city);
-            response.then((value) {
-              double temp = value.main.temp;
-              String desc = value.weather[0].main;
-              int humidity = value.main.humidity;
-              int sunRise = value.sys.sunrise;
-              int sunSet = value.sys.sunset;
-              double windSpeed = value.wind.speed;
-              double lat = value.coord.lat;
-              double lon = value.coord.lon;
-              setState(() {
-                cityTemp = '${temp}';
-                cityDesc = desc;
-                cityWater = '${humidity}%';
-                citySunRise = '${sunRise}';
-                citySunSet = '${sunSet}';
-                cityWindSpeed = '${windSpeed}';
-                cityCoordLat = lat;
-                cityCoordLon = lon;
-              });
-            });
-            setState(() {
-              cityName = city;
-            });
-          }
-        }
-      } catch(err) {
-      }
-    }
+    return "Moscow";
   }
 
   @override
@@ -239,7 +180,7 @@ class HomePageState extends State<HomePage> {
         ),
         toolbarHeight: 350,
 
-        leading: FlatButton(
+        leading: TextButton(
           child: Icon(
             Icons.menu
           ),
@@ -248,7 +189,7 @@ class HomePageState extends State<HomePage> {
           }
         ),
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: () {
               Navigator.pushNamed(context, '/search');
             },
